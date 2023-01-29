@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -19,7 +20,7 @@ import java.sql.Statement;
 public class MainActivity extends AppCompatActivity
 {
     private ActivityMainBinding binding;
-    private static final String url = "192.168.0.54:3306";
+    private static final String url = "jdbc:mysql://192.168.119.114:3306/sample_db?useUnicode=yes&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true";
     private static final String user = "root";
     private static final String pass = "Ismav@143";
     private Connection con;
@@ -39,13 +40,11 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        binding.createTable.setOnClickListener(new View.OnClickListener() {
+        binding.getData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    String createTable = "CREATE TABLE Svik (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50),age INT,email VARCHAR(50))";
-                    Statement stmt = con.createStatement();
-                    stmt.executeUpdate(createTable);
+                    getData();
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -68,10 +67,8 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected String doInBackground(String... params) {
             try {
-                Class.forName("net.sourceforge.jtds.jdbc.Driver");
-                String ConnURL;
-                ConnURL = "jdbc:jtds:sqlserver://" + url + ";" + "databaseName=" + "sample_db" + ";user=" + user + ";password=" + pass + ";";
-                con = DriverManager.getConnection(ConnURL);
+                Class.forName("com.mysql.jdbc.Driver");
+                con = DriverManager.getConnection(url, user, pass);
                 if (!con.isClosed()){
                     System.out.println("Databaseection success");
                     res = "connection success";
@@ -92,16 +89,23 @@ public class MainActivity extends AppCompatActivity
 
     private void getData(){
        try {
-           String selectTable = "SELECT * FROM sample_table";
+           String selectTable = "SELECT * FROM products;";
            Statement stmt = con.createStatement();
            ResultSet result = stmt.executeQuery(selectTable);
            while(result.next()){
                int id = result.getInt("id");
                String name = result.getString("name");
+               String email = result.getString("email");
+               Log.d(TAG, "getData: "+id+" "+name+" "+email);
                //Do something with the data
            }
+           result.close();
+           stmt.close();
+           con.close();
        }catch (Exception e){
            e.printStackTrace();
+       }finally {
+           binding.tv1.setText("Closed connection");
        }
     }
 

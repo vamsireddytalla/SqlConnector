@@ -18,8 +18,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create Table"
-        android:id="@+id/createTable"/>
+        android:text="Get Smaple Data"
+        android:id="@+id/getData"/>
 
     <TextView
         android:layout_width="wrap_content"
